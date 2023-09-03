@@ -36,7 +36,7 @@ export function getTONToken(): Token {
     return {
             name: 'Toncoin',
             symbol: 'TON',
-            address: null,
+            address: new Address('EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c'),
             image: '/assets/images/token/TON.png',
             decimals: 9,
         }

@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Coins} from "ton3-core";
 import {useForm} from "react-hook-form";
 import {DexContext, DexContextType} from "../../context";
@@ -14,15 +14,14 @@ import {
     InputGroup,
     ListGroup,
 } from "react-bootstrap";
-import {UseFormatPriceImpact} from "../../hooks/useFormatPriceImpact";
-import {UsePrintRoute} from "../../hooks/usePrintRoute";
 import {useCalcPrice} from "../../hooks/useCalcPrice";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useLocation} from "react-router";
 import {CoinsToDecimals} from "../../ton/dex/utils";
 import {SettingsModal} from "./components/modals/Settings";
 import {ConfirmSwapModal} from "./components/modals/ConfirmSwap";
-import {useTonWallet} from "@tonconnect/ui-react";
+import axios from "axios";
+import {useTonAddress} from "@tonconnect/ui-react";
 
 export default function SwapPage() {
     const navigator = useNavigate();
@@ -67,6 +66,7 @@ export default function SwapPage() {
                 swapLeft.token.decimals
             );
 
+
     let minReceived = new Coins(0, {decimals: swapRight.token.decimals});
     let maxSold = new Coins(0, {decimals: swapLeft.token.decimals});
 
@@ -86,6 +86,39 @@ export default function SwapPage() {
         setValue,
         getValues,
     } = useForm({mode: "onChange"});
+
+    const LeftTokenAddress = swapLeft.token.address.toString()
+    const RightTokenAddress = swapRight.token.address.toString()
+    const units = parseFloat(getValues('left'))
+
+    const apiUrl = 'https://api.ston.fi/v1/swap/simulate';
+
+    const requestData = {};
+
+    const requestOptions = {
+        method: 'POST',
+        url: apiUrl,
+        params: {
+            offer_address: LeftTokenAddress,
+            ask_address: RightTokenAddress,
+            units: units,
+            slippage_tolerance: slippage / 100,
+        },
+        headers: {
+            'accept': 'application/json',
+        },
+        data: requestData,
+    };
+
+    axios(requestOptions)
+        .then((response) => {
+            const responseData = response.data;
+            const askUnitsValue = responseData.ask_units;
+            setValue('right', askUnitsValue)
+        })
+        .catch((error) => {
+            console.error('Ошибка при отправке запроса:', error);
+        });
 
     const updateAmount = (side: "left" | "right", value?: string) => {
         const _value = value || getValues(side);
@@ -142,7 +175,6 @@ export default function SwapPage() {
             fromAddr && toAddr ? "&" : ""
         }${toAddr ? "to=" + toAddr : ""}`;
         const currentPath = location.pathname + location.search;
-        console.log(currentPath, path);
         if (currentPath !== path) {
             navigator(path);
         }
@@ -155,7 +187,9 @@ export default function SwapPage() {
     const isRoute = swapPairs.length === 2;
 
     let sufficient = 0;
+
     let availableBalance = new Coins(0);
+
     try {
         const inAmount = extract ? maxSold : swapLeft.amount;
         availableBalance = new Coins(swapLeft.userBalance, {
@@ -177,6 +211,11 @@ export default function SwapPage() {
         ? availableBalance
         : new Coins(0);
 
+
+    const WalletAddress = useTonAddress()
+    const handleExchangeClick = () => {
+        ConfirmSwapModal(WalletAddress, LeftTokenAddress, RightTokenAddress, units);
+    };
 
     return (
         <Container>
@@ -240,14 +279,12 @@ export default function SwapPage() {
                                         {...register("left", {
                                             onChange: (event) => {
                                                 fieldNormalizer("left", event.target.value, setValue);
-                                                updateAmount("left");
+                                                updateAmount("left")
                                             },
                                             validate: (value) => value && parseFloat(value) > 0,
+
                                         })}
                                     />
-                                    {/*<InputGroup.Text className="fs-12 fw-500 color-grey ps-1 pe-4">*/}
-                                    {/*    $0*/}
-                                    {/*</InputGroup.Text>*/}
                                     <InputGroup.Text className="p-1">
                                         <Button
                                             variant="outline-primary fs-12 py-2 px-3"
@@ -324,86 +361,45 @@ export default function SwapPage() {
                                         {...register("right", {
                                             onChange: (event) => {
                                                 fieldNormalizer("right", event.target.value, setValue);
-                                                updateAmount("right");
+                                                updateAmount("right")
                                             },
                                             validate: (value) =>
                                                 !extract || (value && parseFloat(value) > 0),
                                         })}
                                     />
-                                    {/*<InputGroup.Text className="fs-12 fw-500 color-grey ps-1 pe-4">*/}
-                                    {/*    $0.0067*/}
-                                    {/*</InputGroup.Text>*/}
                                 </InputGroup>
                             </Form.Group>
                             <ListGroup className="list-unstyled bg-light p-3 rounded-8 mb-4">
                                 <ListGroup.Item className="d-flex mb-2">
-                                    <span className="me-auto fw-500">Price:</span>
-                                    <span className="color-grey">
-                    {`${(realPrice ?? "0").toString().slice(0, 15)} ${
-                        swapLeft.token.symbol
-                    } per 1 ${swapRight.token.symbol}`}
-                  </span>
-                                </ListGroup.Item>
-                                <ListGroup.Item className="d-flex mb-2">
                                     <span className="me-auto fw-500">Slippage Tolerance:</span>
                                     <span className="color-grey">{`${slippage}%`}</span>
                                 </ListGroup.Item>
-                                <ListGroup.Item className="d-flex mb-2">
-                                    {extract ? (
-                                        <>
-                                            <span className="me-auto fw-500">Maximum sold:</span>
-                                            <span className="color-grey">
-                        {`${(maxSold ?? "0").toString()} ${
-                            swapLeft.token.symbol
-                        }`}
-                      </span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="me-auto fw-500">Minimum received:</span>
-                                            <span className="color-grey">
-                        {`${(minReceived ?? "0").toString()} ${
-                            swapRight.token.symbol
-                        }`}
-                      </span>
-                                        </>
-                                    )}
-                                </ListGroup.Item>
-                                <ListGroup.Item className="d-flex mb-2">
-                                    <span className="me-auto fw-500">Price Impact:</span>
-                                    <span className="color-grey">
-                    <UseFormatPriceImpact priceImpact={priceImpact}/>
-                  </span>
-                                </ListGroup.Item>
-                                <ListGroup.Item className="d-flex list-item">
-                                    <span className="me-auto fw-500">Route:</span>
-                                    <span className="color-grey">
-                    <UsePrintRoute pairs={swapPairs}/>
-                  </span>
-                                </ListGroup.Item>
                             </ListGroup>
-                             <>
-                {walletInfo?.isConnected ? (
-                  sufficient ? (
-                    sufficient > 0 ? (
-                      <>
-                        <ConfirmSwapModal />
-                      </>
-                    ) : (
-                      <div className="btn btn-primary text-center fs-16 w-100 rounded-8 disabled">
-                        {`Insufficient ${swapLeft.token.symbol} balance`}
-                      </div>
-                    )
-                  ) : (
-                    <div className="btn btn-primary text-center fs-16 w-100 rounded-8 disabled">
-                      Enter an amount
-                    </div>
-                  )
-                ) : (<div>
-                        Подключите кошелек
-                    </div>
-                )}
-              </>
+                            <>
+                                {walletInfo?.isConnected ? (
+                                    sufficient ? (
+                                        sufficient > 0 ? (
+                                            <Button variant="primary" className="fs-16 w-100"
+                                                    onClick={handleExchangeClick}>
+                                                Exchange
+                                            </Button>
+                                        ) : (
+                                            <div className="btn btn-primary text-center fs-16 w-100 rounded-8 disabled">
+                                                {`Insufficient ${swapLeft.token.symbol} balance\n`}
+
+                                            </div>
+                                        )
+                                    ) : (
+                                        <div className="btn btn-primary text-center fs-16 w-100 rounded-8 disabled">
+                                            Enter an amount
+                                        </div>
+                                    )
+                                ) : <>
+                                    <div className="btn btn-primary text-center fs-16 w-100 rounded-8 disabled">
+                                        Please, Connect You Wallet
+                                    </div>
+                                </>}
+                            </>
                         </Form>
                     </Card>
                 </Col>
