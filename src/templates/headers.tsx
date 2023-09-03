@@ -552,7 +552,7 @@ export function DefaultHeader() {
                       </NavDropdown.Item>
                     </NavDropdown>
                   ) : (
-                    <TonConnectButton/>
+                      <TonConnectButton/>
                   )}
                 </Nav>
               </div>
