@@ -13,7 +13,9 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react'; // Импортир
 export default function App() {
   return (
     <>
-      <TonConnectUIProvider manifestUrl="https://tegro.finance/assets/tonconnect-manifest.json">
+      <TonConnectUIProvider
+          manifestUrl="https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json"
+      >
         <Routes>
           <Route path="/" element={<DefaultLayout />}>
             {/* <Route index element={<ComingSoonPage />} /> */}

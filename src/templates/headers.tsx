@@ -181,36 +181,6 @@ export function DefaultHeader() {
                       Liquidity
                     </Link>
                   </Nav.Item>
-                  {/* <NavDropdown title={
-                    <>
-                    Trade <i className="fa-solid fa-angle-down small ms-auto ms-lg-2" />
-                    </>
-                    }
-                    id="collasible-nav-dropdown"
-                    >
-                    <Link
-                    className={`dropdown-item d-flex ${location.pathname.slice(0, 10) === '/swap' ? 'active-link' : ''}`}
-                    to="/swap"
-                    onClick={() => setExpanded(false)}
-                    >
-                    <i className="fa-light fa-arrow-down-arrow-up dropdown-item-icon" />
-                    <div className="ms-3">
-                       Exchange
-                       <div className="text-muted small">Trade crypto with advanced tools</div>
-                    </div>
-                    </Link>
-                    <Link
-                    className={`dropdown-item d-flex ${location.pathname.slice(0, 10) === '/liquidity' ? 'active-link' : ''}`}
-                    to="/liquidity"
-                    onClick={() => setExpanded(false)}
-                    >
-                    <i className="fa-light fa-money-bill-trend-up dropdown-item-icon" />
-                    <div className="ms-3">
-                       Liquidity
-                       <div className="text-muted small">Start earning from fees</div>
-                    </div>
-                    </Link>
-                    </NavDropdown> */}
                   <NavDropdown
                     title={
                       <>
