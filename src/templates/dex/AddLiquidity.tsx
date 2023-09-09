@@ -57,6 +57,10 @@ export default function AddLiquidityPage() {
     leftToken,
     rightToken,
   } = poolPair as PairData;
+  console.log(tokens)
+  console.log(poolPair)
+  console.log(leftToken)
+  console.log(rightToken)
 
   const tonBalance = walletInfo?.balance ?? new Coins(0);
 
@@ -169,8 +173,9 @@ export default function AddLiquidityPage() {
   } catch {
     // pass
   }
+  console.log(tonBalance)
+  console.log(rightBalance)
 
-  console.log("share", share);
   // console.log("res", leftReserved.toString(), rightReserved.toString())
 
 

@@ -51,7 +51,8 @@ export default function SwapPage() {
     if (firstRender && (from || to)) {
         setStartPair({from, to});
     }
-
+    console.log(swapLeft.userBalance.toString())
+    console.log(walletInfo)
     const price = useCalcPrice(swapPairs);
 
     const realPrice =
@@ -87,8 +88,10 @@ export default function SwapPage() {
         getValues,
     } = useForm({mode: "onChange"});
 
+
     const LeftTokenAddress = swapLeft.token.address.toString()
     const RightTokenAddress = swapRight.token.address.toString()
+
     const units = parseFloat(getValues('left'))
 
     const apiUrl = 'https://api.ston.fi/v1/swap/simulate';
@@ -142,6 +145,7 @@ export default function SwapPage() {
             setExtract(true);
         }
     };
+
 
     useEffect(() => {
         const curLeft: string = getValues("left");
@@ -212,10 +216,6 @@ export default function SwapPage() {
         : new Coins(0);
 
 
-    const WalletAddress = useTonAddress()
-    const handleExchangeClick = () => {
-        ConfirmSwapModal(WalletAddress, LeftTokenAddress, RightTokenAddress, units);
-    };
 
     return (
         <Container>
@@ -242,7 +242,7 @@ export default function SwapPage() {
                                     {walletInfo ? (
                                         <div className="text-end small fw-500 ms-auto">
                                             <div className="color-grey">Balance:</div>
-                                            {swapLeft.userBalance.toString()} {swapLeft.token.symbol}
+                                            {walletInfo.balance.toString()} {swapLeft.token.symbol}
                                         </div>
                                     ) : (
                                         <></>
@@ -379,10 +379,9 @@ export default function SwapPage() {
                                 {walletInfo?.isConnected ? (
                                     sufficient ? (
                                         sufficient > 0 ? (
-                                            <Button variant="primary" className="fs-16 w-100"
-                                                    onClick={handleExchangeClick}>
-                                                Exchange
-                                            </Button>
+                                            <>
+                                                <ConfirmSwapModal/>
+                                            </>
                                         ) : (
                                             <div className="btn btn-primary text-center fs-16 w-100 rounded-8 disabled">
                                                 {`Insufficient ${swapLeft.token.symbol} balance\n`}
