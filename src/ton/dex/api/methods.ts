@@ -29,9 +29,11 @@ class DexApi {
 
 const api = new DexApi()
 
-
 export const getPairs = async (): Promise<Pair[]> => {
+    console.log(1)
     const pairs = await api.v1.pairs.get();
+    console.log(pairs)
+
     return pairs.sort(pairsSorter);
 }
 

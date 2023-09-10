@@ -3,6 +3,7 @@ import {Address, Coins} from 'ton3-core';
 import {tonClient} from '../index';
 import {Pair, Token} from './api/types';
 import {getDefaultPairs} from "../utils";
+
 export const addrToStr = (addr: Address | null) => (addr ? addr.toString("raw") : '')
 
 export const getPairByTokens = (pairs: Pair[], token1: Address | null, token2: Address | null): Pair => {
@@ -15,7 +16,8 @@ export const getPairByTokens = (pairs: Pair[], token1: Address | null, token2: A
     if (addrToStr(pair.leftToken.address) === strToken1) {
         return pair;
     }
-    return {...pair,
+    return {
+        ...pair,
         leftToken: pair.rightToken,
         leftReserved: pair.rightReserved,
         rightToken: pair.leftToken,
@@ -39,67 +41,9 @@ export const getTokensFromPairs = (pairs: Pair[]) => {
 }
 
 export const getLPSupply = async (pairAddress: string): Promise<Coins> => {
-    const { totalSupply } = await tonClient.Jetton.getData(new Address(pairAddress));
-    return new Coins(totalSupply, { isNano: true });
+    const {totalSupply} = await tonClient.Jetton.getData(new Address(pairAddress));
+    return new Coins(totalSupply, {isNano: true});
 };
-//
-// export function getDefaultPair(): Pair {
-//     const right = getDefaultJetton();
-//     return {
-//         address: 'EQBpLTnl0mciLdS52V6-Eh7h5TX4ivz-jOzVQoXI9ibHy9_i',
-//         left: null,
-//         right,
-//         leftReserve: new Coins(0),
-//         rightReserve: new Coins(0),
-//         lpSupply: new Coins(0),
-//     };
-// }
-//
-// export const getPairInfo = async (leftSymbol: string, rightSymbol: string): Promise<{ address: string | null, leftReserve: Coins, rightReserve: Coins }> => {
-//     let address;
-//     let leftReserve;
-//     let rightReserve;
-//     try {
-//         const pairMeta = await getPair(leftSymbol, rightSymbol);
-//         address = pairMeta.address;
-//         leftReserve = new Coins(pairMeta.leftReserved, { isNano: true });
-//         rightReserve = new Coins(pairMeta.rightReserved, { isNano: true });
-//     } catch {
-//         // pass
-//     }
-//     return { address: address ?? null, leftReserve: leftReserve ?? new Coins(0), rightReserve: rightReserve ?? new Coins(0) };
-// };
-//
-// export const getJettonInfo = async (symbol: string): Promise<JettonInfo | null> => {
-//     const token = await getToken(symbol);
-//     return symbol === 'TON' ? null : { jetton: { address: token.address, meta: TokenToJettonMeta(token) }, wallet: {}, balance: new Coins(0) };
-// };
-//
-// export const getPairBySymbol = async (leftSymbol: string, rightSymbol: string): Promise<Pair> => {
-//     const { address, leftReserve, rightReserve } = await getPairInfo(leftSymbol, rightSymbol);
-//     if (!address) throw Error('PAIR NOT VALID'); // TODO запилить функцию выбора другой пары
-//     return {
-//         address,
-//         left: await getJettonInfo(leftSymbol),
-//         right: await getJettonInfo(rightSymbol),
-//         leftReserve,
-//         rightReserve,
-//         lpSupply: await getLPSupply(address),
-//     };
-// };
-//
-// export const getValidPair = async (left: JettonInfo | null, right: JettonInfo | null): Promise<Pair> => {
-//     const { address, leftReserve, rightReserve } = await getPairInfo(left ? left.jetton.meta.symbol : 'TON', right ? right.jetton.meta.symbol : 'TON');
-//     if (!address) throw Error('PAIR NOT VALID'); // TODO запилить функцию выбора другой пары
-//     return {
-//         address,
-//         left,
-//         right,
-//         leftReserve,
-//         rightReserve,
-//         lpSupply: await getLPSupply(address),
-//     };
-// };
 
 const round = (x: number, d: number) => {
     return Math.round(x * 10 ** d) / 10 ** d;
@@ -123,7 +67,7 @@ export const calcOutAmountAndPriceImpact = (inAmount: Coins, pairs: Pair[]): [Co
         const out1D = CoinsToDecimals(out1, pairs[0].rightToken.decimals);
         const outAmount = getOutAmount(out1D, pairs[1].leftReserved, pairs[1].rightReserved);
         const priceImpact1 = new Coins(inAmount, {decimals: 18}).div(new Coins(pairs[0].leftReserved, {decimals: 18}).add(new Coins(inAmount, {decimals: 18})).toString()).mul(100);
-        const priceImpact2 = new Coins(out1D, {decimals: 18}).div(new Coins(pairs[1].leftReserved, {decimals: 18}).add(new Coins(out1D,{decimals: 18})).toString()).mul(100);
+        const priceImpact2 = new Coins(out1D, {decimals: 18}).div(new Coins(pairs[1].leftReserved, {decimals: 18}).add(new Coins(out1D, {decimals: 18})).toString()).mul(100);
         const priceImpact = Number(new Coins(priceImpact1, {decimals: 18}).add(priceImpact2).toString());
         // const priceImpact = Number(new Coins(inAmount).mul(out1.toString()).div(new Coins(pairs[0].leftReserved).mul(pairs[1].leftReserved.toString()).add(new Coins(inAmount).mul(out1.toString())).toString()).mul(100).toString());
         return [CoinsToDecimals(outAmount, pairs[1].rightToken.decimals), priceImpact]

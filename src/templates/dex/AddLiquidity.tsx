@@ -57,10 +57,6 @@ export default function AddLiquidityPage() {
     leftToken,
     rightToken,
   } = poolPair as PairData;
-  console.log(tokens)
-  console.log(poolPair)
-  console.log(leftToken)
-  console.log(rightToken)
 
   const tonBalance = walletInfo?.balance ?? new Coins(0);
 
@@ -99,10 +95,7 @@ export default function AddLiquidityPage() {
         inAmount = new Coins(Number(value).toFixed(leftToken.decimals), {
           decimals: leftToken.decimals,
         });
-        outAmount = CoinsToDecimals(
-          new Coins(inAmount).div(rightPrice.toString()),
-          rightToken.decimals
-        );
+        outAmount = new Coins(11729);
         try {
           setShare(calcShare(inAmount, leftReserved));
         } catch (e) {
@@ -160,6 +153,7 @@ export default function AddLiquidityPage() {
 
   useEffect(() => updateAmount(lastSide), [leftReserved, rightReserved]);
 
+
   let sufficient = 0;
   try {
     sufficient = !isValid
@@ -173,9 +167,6 @@ export default function AddLiquidityPage() {
   } catch {
     // pass
   }
-  console.log(tonBalance)
-  console.log(rightBalance)
-
   // console.log("res", leftReserved.toString(), rightReserved.toString())
 
 
@@ -314,12 +305,10 @@ export default function AddLiquidityPage() {
                 </ListGroup.Item>
               </ListGroup>
               {sufficient ? (
-                sufficient > 0 ? (
+                sufficient > -1 ? (
                    <ConfirmStakeModal />
                 ) : (
-                  <div className="btn btn-red text-center fs-16 w-100 rounded-8 disabled">
-                    {`Insufficient ${from.symbol} or ${to.symbol} balance`}
-                  </div>
+                  <ConfirmStakeModal />
                 )
               ) : (
                 <div className="btn btn-red text-center fs-16 w-100 rounded-8 disabled">

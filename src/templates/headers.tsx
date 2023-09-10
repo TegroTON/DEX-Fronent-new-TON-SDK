@@ -169,17 +169,6 @@ export function DefaultHeader() {
                     </Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Link
-                      className={`nav-link text-nowrap ${
-                        location.pathname.slice(0, 10) === "/liquidity"
-                          ? "active-link"
-                          : ""
-                      }`}
-                      to="/liquidity"
-                      onClick={() => setExpanded(false)}
-                    >
-                      Liquidity
-                    </Link>
                   </Nav.Item>
                   <NavDropdown
                     title={
