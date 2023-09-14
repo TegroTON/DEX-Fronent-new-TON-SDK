@@ -38,7 +38,7 @@
 
 ## Built With
 
-Node JS
+Node JS >13.0
 npm
 react
 
@@ -48,7 +48,7 @@ react
 ```sh
 npm install
 npm run build
-npm run dev
+npm run preview
 ```
 
 
