@@ -21,12 +21,10 @@ import {CoinsToDecimals} from "../../ton/dex/utils";
 import {SettingsModal} from "./components/modals/Settings";
 import {ConfirmSwapModal} from "./components/modals/ConfirmSwap";
 import {useTonWallet} from "@tonconnect/ui-react";
+import axios from "axios";
+
 
 export default function SwapPage() {
-    const wallet = useTonWallet()
-    console.log('===========================')
-    console.log(wallet)
-    console.log('===========================')
     const navigator = useNavigate();
     const location = useLocation();
     const [firstRender, setFirstRender] = useState(true);
@@ -90,14 +88,40 @@ export default function SwapPage() {
     } = useForm({mode: "onChange"});
 
 
-    const LeftTokenAddress = swapLeft.token.address
-    const RightTokenAddress = swapRight.token.address
+    const LeftTokenAddress = swapLeft?.token?.address?.toString() || ''
+    const RightTokenAddress = swapRight?.token?.address?.toString() || ''
 
     const units = parseFloat(getValues('left'))
 
-    const apiUrl = 'https://api.ston.fi/v1/swap/simulate';
-
+    const url = 'https://api.ston.fi/v1/swap/simulate';
     const requestData = {};
+
+    const requestOptions = {
+        method: 'POST',
+        url: url,
+        params: {
+            offer_address: LeftTokenAddress,
+            ask_address: RightTokenAddress,
+            units: units,
+            slippage_tolerance: slippage / 100,
+        },
+        headers: {
+            'accept': 'application/json',
+        },
+        data: requestData,
+    };
+
+    axios(requestOptions)
+        .then((response) => {
+            const responseData = response.data;
+            const askUnitsValue = responseData.fee_units;
+            setValue('right', askUnitsValue)
+        })
+        .catch((error) => {
+            console.error('Ошибка при отправке запроса:', error);
+        });
+
+
     const updateAmount = (side: "left" | "right", value?: string) => {
         const _value = value || getValues(side);
         if (side === "left") {
@@ -105,6 +129,7 @@ export default function SwapPage() {
                 new Coins(_value || "0", {decimals: swapLeft.token.decimals})
             );
             setExtract(false);
+
         } else {
             const pair = swapPairs[swapPairs.length - 1];
             const maxValue = Number(
@@ -121,9 +146,6 @@ export default function SwapPage() {
         }
     };
 
-
-    console.log('==================')
-    console.log('==================')
 
     useEffect(() => {
         const curLeft: string = getValues("left");
@@ -192,7 +214,6 @@ export default function SwapPage() {
     const maxAmount = availableBalance.isPositive()
         ? availableBalance
         : new Coins(0);
-
 
 
     return (
