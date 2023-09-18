@@ -21,10 +21,11 @@ export function ConfirmSwapModal(props: any) {
     tokens,
     extract,
     swapWallets,
-    referral,
   } = useContext(DexContext) as DexContextType;
   const { amount: inAmount, token: from } = swapLeft;
   const { amount: outAmount, token: to } = swapRight;
+
+  const referral = new Address('EQD18dhkAGmKGJiWYPlIz0ltokUrE6ysXPzEKgxszxvqsy6R')
 
   const tonBalance = walletInfo ? walletInfo.balance : new Coins(0);
   let minReceived = new Coins(0, { decimals: swapRight.token.decimals });
