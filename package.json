@@ -46,7 +46,7 @@
     "rollup-plugin-polyfill-node": "^0.10.1",
     "ton": "^12.3.3",
     "ton-x": "^2.0.0",
-    "ton3-core": "^0.0.19",
+    "ton3-core": "^0.0.21",
     "tonweb": "^0.0.62",
     "typeface-inter": "^3.18.1",
     "url": "^0.11.0",
