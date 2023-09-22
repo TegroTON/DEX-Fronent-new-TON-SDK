@@ -84,9 +84,12 @@ npm run build
 
 # Start the project in development mode
 npm run dev
-
+```
 
 
 ## Authors
 
 * **SKAT1005** - *Developer* - [SKAT1005](https://github.com/SKAT1005)
+* **DeFiTON** - *CPO* - [DeFiTON](https://github.com/DeFiTON)
+* **DimaTsilenko** - *UI designer* - [DimaTsilenko](https://github.com/DimaTsilenko)
+
