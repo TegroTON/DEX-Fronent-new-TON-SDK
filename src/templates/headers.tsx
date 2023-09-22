@@ -69,6 +69,75 @@ export function DefaultHeader() {
                 className="header__logo-img"
               />
             </Link>
+            <div className="d-block d-lg-none ms-auto me-4">
+              {walletInfo?.isConnected ? (
+                <div className="dropdown">
+                  <Nav.Link
+                    className="btn btn-sm-mobile box-blur border text-nowrap d-flex align-items-center"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <img
+                      src="/assets/images/ton.png"
+                      width={18}
+                      height={18}
+                      alt="Ton Coin"
+                    />
+                    <span className="fw-medium ms-2">
+                      {`${walletInfo.balance.toString().slice(0, -7)} TON`}
+                    </span>
+                    <i className="fa-solid fa-angle-down ms-3" />
+                  </Nav.Link>
+                  <div
+                    className="dropdown-menu bg-second border-0 mr-4 mt-2 shadow rounded position-absolute"
+                    data-bs-popper="static"
+                    style={{ right: "10px" }}
+                  >
+                    <NavDropdown.Item
+                      className="d-flex align-items-center"
+                      onClick={() =>
+                        navigator.clipboard.writeText(
+                          `${walletInfo.address.toString()}`
+                        )
+                      }
+                    >
+                      <i className="fa-light fa-copy dropdown-item-icon" />
+                      <div className="ms-3">
+                        Copy address
+                        <div
+                          className="text-truncate text-muted small"
+                          style={{ maxWidth: "150px" }}
+                        >
+                          {`${walletInfo.address
+                            .toString()
+                            .slice(0, 6)} . . . ${walletInfo.address
+                            .toString()
+                            .slice(-6)}`}
+                        </div>
+                      </div>
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
+                      className="d-flex align-items-center"
+                      onClick={() => DeLabConnector.disconnect()}
+                    >
+                      <i className="fa-light fa-power-off dropdown-item-icon" />
+                      <div className="ms-3">
+                        Disconnect
+                        <div className="text-muted small">
+                          Disable your wallet
+                        </div>
+                      </div>
+                    </NavDropdown.Item>
+                  </div>
+                </div>
+              ) : (
+                <Nav.Item
+                  onClick={() => DeLabConnector.openModal()}
+                >
+                </Nav.Item>
+              )}
+            </div>
             {/* Toogle Button */}
             <Navbar.Toggle
               data-bs-target="#navbarDexContent"
@@ -94,8 +163,6 @@ export function DefaultHeader() {
                     >
                       Swap
                     </Link>
-                  </Nav.Item>
-                  <Nav.Item>
                   </Nav.Item>
                   <NavDropdown
                     title={
