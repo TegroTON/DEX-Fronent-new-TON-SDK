@@ -14,7 +14,7 @@ export default function App() {
   return (
     <>
       <TonConnectUIProvider
-          manifestUrl="https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json"
+          manifestUrl="https://dex.tegro.io/tonconnect-manifest.json"
       >
         <Routes>
           <Route path="/" element={<DefaultLayout />}>
