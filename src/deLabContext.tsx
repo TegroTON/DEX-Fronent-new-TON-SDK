@@ -12,6 +12,7 @@ import {
 import usePrefersColorScheme from 'use-prefers-color-scheme';
 import { connector, tonClient } from './ton';
 import './static/delab-fix.css';
+import {useTonConnectUI} from "@tonconnect/ui-react";
 
 export function DeLabButtonLabel() {
     const white = 'https://ipfs.io/ipfs/bafkreigpmboyvo43fa4ybalflby3pb3eg2emgzn7axkgd7rmvrgdpx4oja';
