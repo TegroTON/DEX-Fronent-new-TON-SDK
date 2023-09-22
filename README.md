@@ -27,8 +27,6 @@
   - [Templates](#templates)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
-  - [Testing](#testing)
-- [Contribution](#contribution)
 - [Authors](#authors)
 
 ## About the Project
