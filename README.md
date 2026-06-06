@@ -9,7 +9,7 @@
   <p align="center">
     DEX is a platform for secure and efficient cryptocurrency exchange.
     <br/>
-    <a href="https://dex.tegro.io/">View Demo</a>
+    <a href="https://tegro.finance/">View Demo</a>
     .
     <a href="https://github.com/SKAT1005/dex-fronent-new-DEX/issues">Report Bug</a>
     .

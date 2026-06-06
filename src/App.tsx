@@ -14,7 +14,7 @@ export default function App() {
   return (
     <>
       <TonConnectUIProvider
-          manifestUrl="https://dex.tegro.io/tonconnect-manifest.json"
+          manifestUrl="https://tegro.finance/tonconnect-manifest.json"
       >
         <Routes>
           <Route path="/" element={<DefaultLayout />}>
